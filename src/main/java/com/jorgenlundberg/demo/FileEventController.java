@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
 @RestController
 public class FileEventController {
 
@@ -28,8 +31,10 @@ public class FileEventController {
                )
   @ResponseStatus(code = CREATED)
   public @ResponseBody Reply event(@RequestBody FileEvent event) {
-    DbEvent parseResult = fileParser.parse(event);
-    return new Reply("AWESOME", "" );
+    var parseResult = fileParser.parse(event);
+    var msg = String.format("File uploaded to s3: '%s'", parseResult.getS3Key());
+    System.out.println(msg);
+    return new Reply("AWESOME", msg);
   }
 
   @GetMapping(value = "/")
@@ -38,29 +43,10 @@ public class FileEventController {
     return new Reply("AWESOME", "Hello World!" );
   }
 
+  @Data
+  @AllArgsConstructor
   private static final class Reply {
-    String status;
-    String message;
-
-    public Reply(String status, String message) {
-      this.status = status;
-      this.message = message;
-    }
-
-    public String getStatus() {
-      return status;
-    }
-
-    public void setStatus(String status) {
-      this.status = status;
-    }
-
-    public String getMessage() {
-      return message;
-    }
-
-    public void setMessage(String message) {
-      this.message = message;
-    }
+    private String status;
+    private String message;
   }
 }

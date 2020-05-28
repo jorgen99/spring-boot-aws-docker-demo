@@ -26,7 +26,7 @@ public class FileIntegrationTests {
   @Test
   public void it_should_return_CREATED_on_success() throws Exception {
     FileEvent event = new FileEvent("s3://the_bucket/the_path/the_file");
-        String eventJson = asJsonString(event);
+    String eventJson = asJsonString(event);
 
     mockMvc
         .perform(
@@ -35,7 +35,12 @@ public class FileIntegrationTests {
                 .content(eventJson))
         .andDo(print())
         .andExpect(status().isCreated())
-        .andExpect(content().json("{ 'status':'AWESOME', 'message':''}"));
+        .andExpect(content().json(""
+            + "{"
+            + "  \"status\": \"AWESOME\","
+            + "  \"message\": \"File uploaded to s3: 's3://the_bucket/the_path/the_file'\""
+            + "}"
+        ));
   }
 
   @Test

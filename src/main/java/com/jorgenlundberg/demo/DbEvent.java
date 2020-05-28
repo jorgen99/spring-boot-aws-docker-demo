@@ -1,10 +1,16 @@
 package com.jorgenlundberg.demo;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class DbEvent {
 
-  private final String s3Key;
-
-  public DbEvent(String s3Key) {
-    this.s3Key = s3Key;
-  }
+  private String s3Key;
 }
