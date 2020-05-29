@@ -4,6 +4,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,11 +19,16 @@ import lombok.Data;
 @RestController
 public class FileEventController {
 
-  private final FileParser fileParser;
+  private final FileEventParser fileEventParser;
+  private final DynamoDb dynamoDb;
+
+  @Value("${buildtime}")
+  private String BUILD_TIME;
 
   @Autowired
-  public FileEventController(FileParser fileParser) {
-    this.fileParser = fileParser;
+  public FileEventController(FileEventParser fileEventParser, DynamoDb dynamoDb) {
+    this.fileEventParser = fileEventParser;
+    this.dynamoDb = dynamoDb;
   }
 
   @PostMapping(value = "/event/v1",
@@ -30,17 +36,20 @@ public class FileEventController {
                produces = APPLICATION_JSON_VALUE
                )
   @ResponseStatus(code = CREATED)
-  public @ResponseBody Reply event(@RequestBody FileEvent event) {
-    var parseResult = fileParser.parse(event);
-    var msg = String.format("File uploaded to s3: '%s'", parseResult.getS3Key());
+  public @ResponseBody Reply event(@RequestBody String eventJson) {
+    var eventRecord = fileEventParser.parse(eventJson);
+
+    var msg = String.format("File uploaded to s3: '%s'", eventRecord.getUrl());
     System.out.println(msg);
-    return new Reply("AWESOME", msg);
+
+    dynamoDb.save(eventRecord);
+    return new Reply("AWESOME", msg, BUILD_TIME);
   }
 
   @GetMapping(value = "/")
   @ResponseStatus(code = HttpStatus.OK)
   public @ResponseBody Reply hello() {
-    return new Reply("AWESOME", "Hello World!" );
+    return new Reply("AWESOME", "Hello World!", BUILD_TIME);
   }
 
   @Data
@@ -48,5 +57,6 @@ public class FileEventController {
   private static final class Reply {
     private String status;
     private String message;
+    private String buildTime;
   }
 }
