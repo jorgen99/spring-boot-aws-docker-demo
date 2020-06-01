@@ -32,7 +32,7 @@ public class FileIntegrationTests {
 
   @Test
   public void it_should_return_CREATED_on_success() throws Exception {
-    doNothing().when(mockDb).save(any());
+    doNothing().when(mockDb).put(any());
     mockMvc
         .perform(
             post("/event/v1")

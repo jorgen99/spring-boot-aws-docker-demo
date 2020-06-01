@@ -34,21 +34,23 @@ public class FileEventController {
   @PostMapping(value = "/event/v1",
                consumes = APPLICATION_JSON_VALUE,
                produces = APPLICATION_JSON_VALUE
-               )
+  )
   @ResponseStatus(code = CREATED)
-  public @ResponseBody Reply event(@RequestBody String eventJson) {
+  public @ResponseBody
+  Reply event(@RequestBody String eventJson) {
     var eventRecord = fileEventParser.parse(eventJson);
 
     var msg = String.format("File uploaded to s3: '%s'", eventRecord.getUrl());
     System.out.println(msg);
 
-    dynamoDb.save(eventRecord);
+    dynamoDb.put(eventRecord);
     return new Reply("AWESOME", msg, BUILD_TIME);
   }
 
   @GetMapping(value = "/")
   @ResponseStatus(code = HttpStatus.OK)
-  public @ResponseBody Reply hello() {
+  public @ResponseBody
+  Reply hello() {
     return new Reply("AWESOME", "Hello World!", BUILD_TIME);
   }
 
