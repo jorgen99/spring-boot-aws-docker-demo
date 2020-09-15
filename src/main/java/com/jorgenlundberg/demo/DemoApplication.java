@@ -7,7 +7,7 @@ import org.springframework.cloud.aws.autoconfigure.context.ContextRegionProvider
 import org.springframework.cloud.aws.autoconfigure.context.ContextStackAutoConfiguration;
 import org.springframework.cloud.aws.autoconfigure.messaging.MessagingAutoConfiguration;
 
-@SpringBootApplication( exclude = {
+	@SpringBootApplication( exclude = {
 		ContextRegionProviderAutoConfiguration.class,
 		ContextStackAutoConfiguration.class,
 		MessagingAutoConfiguration.class})
